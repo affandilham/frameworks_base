@@ -7439,6 +7439,6 @@ message MetricsEvent {
     // END OF AOSP CONSTANTS
 
     // CUSTOM Metrics
-    CLOWN = 2772;
+    AFTERLIFE = 2772;
   }
 }
