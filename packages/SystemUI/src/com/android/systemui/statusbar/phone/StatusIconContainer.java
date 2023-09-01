@@ -41,7 +41,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A container for Status bar system icons. Limits the number of system icons and handles overflow
+ * A container for Status bar system icons. Limits the number of system icons
+ * and handles overflow
  * similar to {@link NotificationIconContainer}.
  *
  * Children are expected to implement {@link StatusIconDisplayable}
@@ -52,8 +53,9 @@ public class StatusIconContainer extends AlphaOptimizedLinearLayout {
     private static final boolean DEBUG = false;
     private static final boolean DEBUG_OVERFLOW = false;
     // Max 8 status icons including battery
-    private static final int MAX_ICONS = 7;
     private static final int MAX_DOTS = 1;
+    // Make max system status bar icons configurable
+    public final int MAX_ICONS = getResources().getInteger(R.integer.config_maxVisibleStatusIcons);
 
     private int mDotPadding;
     private int mIconSpacing;
@@ -213,8 +215,9 @@ public class StatusIconContainer extends AlphaOptimizedLinearLayout {
 
     /**
      * Add a name of an icon slot to be ignored. It will not show up nor be measured
+     * 
      * @param slotName name of the icon as it exists in
-     * frameworks/base/core/res/res/values/config.xml
+     *                 frameworks/base/core/res/res/values/config.xml
      */
     public void addIgnoredSlot(String slotName) {
         boolean added = addIgnoredSlotInternal(slotName);
@@ -225,6 +228,7 @@ public class StatusIconContainer extends AlphaOptimizedLinearLayout {
 
     /**
      * Add a list of slots to be ignored
+     * 
      * @param slots names of the icons to ignore
      */
     public void addIgnoredSlots(List<String> slots) {
@@ -252,8 +256,10 @@ public class StatusIconContainer extends AlphaOptimizedLinearLayout {
     }
 
     /**
-     * Remove a slot from the list of ignored icon slots. It will then be shown when set to visible
+     * Remove a slot from the list of ignored icon slots. It will then be shown when
+     * set to visible
      * by the {@link StatusBarIconController}.
+     * 
      * @param slotName name of the icon slot to remove from the ignored list
      */
     public void removeIgnoredSlot(String slotName) {
@@ -265,7 +271,9 @@ public class StatusIconContainer extends AlphaOptimizedLinearLayout {
 
     /**
      * Remove a list of slots from the list of ignored icon slots.
-     * It will then be shown when set to visible by the {@link StatusBarIconController}.
+     * It will then be shown when set to visible by the
+     * {@link StatusBarIconController}.
+     * 
      * @param slots name of the icon slots to remove from the ignored list
      */
     public void removeIgnoredSlots(List<String> slots) {
@@ -281,6 +289,7 @@ public class StatusIconContainer extends AlphaOptimizedLinearLayout {
 
     /**
      * Sets the list of ignored icon slots clearing the current list.
+     * 
      * @param slots names of the icons to ignore
      */
     public void setIgnoredSlots(List<String> slots) {
@@ -292,8 +301,9 @@ public class StatusIconContainer extends AlphaOptimizedLinearLayout {
      * Returns the view corresponding to a particular slot.
      *
      * Use it solely to manipulate how it is presented.
+     * 
      * @param slot name of the slot to find. Names are defined in
-     *            {@link com.android.internal.R.config_statusBarIcons}
+     *             {@link com.android.internal.R.config_statusBarIcons}
      * @return a view for the slot if this container has it, else {@code null}
      */
     public View getViewForSlot(String slot) {
@@ -317,8 +327,9 @@ public class StatusIconContainer extends AlphaOptimizedLinearLayout {
         float contentStart = getPaddingStart();
         int childCount = getChildCount();
         // Underflow === don't show content until that index
-        if (DEBUG) Log.d(TAG, "calculateIconTranslations: start=" + translationX
-                + " width=" + width + " underflow=" + mNeedsUnderflow);
+        if (DEBUG)
+            Log.d(TAG, "calculateIconTranslations: start=" + translationX
+                    + " width=" + width + " underflow=" + mNeedsUnderflow);
 
         // Collect all of the states which want to be visible
         for (int i = childCount - 1; i >= 0; i--) {
@@ -329,11 +340,13 @@ public class StatusIconContainer extends AlphaOptimizedLinearLayout {
             if (!iconView.isIconVisible() || iconView.isIconBlocked()
                     || mIgnoredSlots.contains(iconView.getSlot())) {
                 childState.visibleState = STATE_HIDDEN;
-                if (DEBUG) Log.d(TAG, "skipping child (" + iconView.getSlot() + ") not visible");
+                if (DEBUG)
+                    Log.d(TAG, "skipping child (" + iconView.getSlot() + ") not visible");
                 continue;
             }
 
-            // Move translationX to the spot within StatusIconContainer's layout to add the view
+            // Move translationX to the spot within StatusIconContainer's layout to add the
+            // view
             // without cutting off the child view.
             translationX -= getViewTotalWidth(child);
             childState.visibleState = STATE_ICON;
@@ -381,7 +394,8 @@ public class StatusIconContainer extends AlphaOptimizedLinearLayout {
             }
         }
 
-        // Stole this from NotificationIconContainer. Not optimal but keeps the layout logic clean
+        // Stole this from NotificationIconContainer. Not optimal but keeps the layout
+        // logic clean
         if (isLayoutRtl()) {
             for (int i = 0; i < childCount; i++) {
                 View child = getChildAt(i);
@@ -432,7 +446,8 @@ public class StatusIconContainer extends AlphaOptimizedLinearLayout {
         public int visibleState = STATE_ICON;
         public boolean justAdded = true;
 
-        // How far we are from the end of the view actually is the most relevant for animation
+        // How far we are from the end of the view actually is the most relevant for
+        // animation
         float distanceToViewEnd = -1;
 
         @Override
@@ -451,10 +466,12 @@ public class StatusIconContainer extends AlphaOptimizedLinearLayout {
             AnimationProperties animationProperties = null;
             boolean animateVisibility = true;
 
-            // Figure out which properties of the state transition (if any) we need to animate
+            // Figure out which properties of the state transition (if any) we need to
+            // animate
             if (justAdded
                     || icon.getVisibleState() == STATE_HIDDEN && visibleState == STATE_ICON) {
-                // Icon is appearing, fade it in by putting it where it will be and animating alpha
+                // Icon is appearing, fade it in by putting it where it will be and animating
+                // alpha
                 super.applyToView(view);
                 view.setAlpha(0.f);
                 icon.setVisibleState(STATE_HIDDEN);
